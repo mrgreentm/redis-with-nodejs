@@ -13,15 +13,6 @@ function inserir(chave, valor) {
   }
 }
 
-async function recuperar(chave) {
-  try {
-    const value = await client.get(chave);
-    return value;
-  } catch (error) {
-    throw error;
-  }
-}
-
 client.connect(() => {
   console.log("Conectando ao Servidor Redis!!!!!!!!!");
 
@@ -32,9 +23,9 @@ client.on("error", (error) => {
   console.error("Erro na conexão com Redis", error);
 });
 
-app.get("/aluno", async (req, res) => {
-  const aluno = await recuperar("aluno");
-  console.log(aluno);
-  //const result = await client.sendCommand(["GET", "foo"]);
+app.get("/getByKey/:key", async (req, res) => {
+  const key = req.params.key
+  const result = await client.get(key);
+  console.log(`${key}: `, result);
 });
 app.listen(3000);
