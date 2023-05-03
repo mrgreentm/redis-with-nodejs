@@ -13,11 +13,10 @@ function inserir(chave, valor) {
   }
 }
 
-function recuperar(chave) {
+async function recuperar(chave) {
   try {
-    client.get(chave, (err, value) => {
-      return value;
-    });
+    const value = await client.get(chave);
+    return value;
   } catch (error) {
     throw error;
   }
@@ -33,7 +32,9 @@ client.on("error", (error) => {
   console.error("Erro na conexão com Redis", error);
 });
 
-app.get("/aluno", (req, res) => {
-  return recuperar("aluno");
+app.get("/aluno", async (req, res) => {
+  const aluno = await recuperar("aluno");
+  console.log(aluno);
+  //const result = await client.sendCommand(["GET", "foo"]);
 });
 app.listen(3000);
