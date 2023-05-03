@@ -1,22 +1,39 @@
-const redis = require("redis");
+import Redis from "ioredis";
+import express from "express";
 
-const client = redis.createClient();
+const app = express();
+// inicializa uma instância do redis
+const client = new Redis();
 
-
-// conectando ao redis
-client.connect((err) => {
-  if (err) {
-    console.error(err);
-    return;
+function inserir(chave, valor) {
+  try {
+    client.set(chave, valor);
+  } catch (error) {
+    throw error;
   }
-  console.log('Conectado ao servidor Redis');
-  
-  client.set('chave', 'valor', (err, reply) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    console.log(reply);
-    client.quit();
-  });
+}
+
+function recuperar(chave) {
+  try {
+    client.get(chave, (err, value) => {
+      return value;
+    });
+  } catch (error) {
+    throw error;
+  }
+}
+
+client.connect(() => {
+  console.log("Conectando ao Servidor Redis!!!!!!!!!");
+
+  inserir("aluno", "joao");
 });
+// caso haja algum erro de conexão com o servidor redis
+client.on("error", (error) => {
+  console.error("Erro na conexão com Redis", error);
+});
+
+app.get("/aluno", (req, res) => {
+  return recuperar("aluno");
+});
+app.listen(3000);
